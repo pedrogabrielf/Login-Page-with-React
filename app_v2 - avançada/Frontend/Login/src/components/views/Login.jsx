@@ -4,6 +4,7 @@ import './style.css';
 
 import registerImg from './img/register.svg';
 import logImg from './img/log.svg';
+import { GoogleLogin } from 'react-google-login';
 
 const Login = () => {
   const containerRef = useRef(null);
@@ -52,23 +53,44 @@ const Login = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
-        if (signUpBtnRef.current.classList.contains('active')) {
+        if (signUpBtnRef.current && signUpBtnRef.current.classList.contains('active')) {
           signUpBtnRef.current.classList.remove('active');
+        }
+        if (signInBtnRef.current) {
           signInBtnRef.current.classList.add('active');
+        }
+        if (containerRef.current) {
           containerRef.current.classList.remove('sign-up-mode');
         }
       }
     };
-
+  
     document.addEventListener('mousedown', handleClickOutside);
-
+  
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
+  
   return (
     <div className="container" ref={containerRef}>
+              <div id="signInButton"> 
+            <GoogleLogin
+                clientId={clientId}
+                buttonText="Login"
+                onSuccess={onSuccess}
+                onFailure={onFailure}
+                cookiePolicy={'single-host-origin'}
+                isSignedIn={true}
+            />
+        </div>
+        <div id="signOutButton">
+            <GoogleLogout
+                clientId={clientId}
+                buttonText={"Logout"}
+                onLogoutSuccess={onSuccess}
+            />
+        </div>
       <div className="forms-container">
         <div className="signin-signup">
           <form action="#" className="sign-in-form" onSubmit={handleLogin}>

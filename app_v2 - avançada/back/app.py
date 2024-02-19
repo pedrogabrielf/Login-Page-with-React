@@ -10,7 +10,8 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+(app, resources={r"/api/*": {"origins": "*"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/teste'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -28,8 +29,8 @@ app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id='46323615356-ikelrlgnntdirv9tim8b89gvp03tl0d1.apps.googleusercontent.com',
-    client_secret='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',
+    client_id='46323615356-pfo2mgcspcuhbonbcmkoe2e46hdu1j5h.apps.googleusercontent.com',
+    client_secret='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',
     access_token_url='https://accounts.google.com/o/oauth2/token',
     authorize_url='https://accounts.google.com/o/oauth2/auth',
     api_base_url='https://www.googleapis.com/oauth2/v1/',
