@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, please refer to the docs:
+            https://cordova.apache.org/docs/en/latest/
+        Some notes:
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta name="color-scheme" content="light dark">
+        <link rel="stylesheet" href="css/index.css">
+        <title>Hello World</title>
+    </head>
+    <body>
+        <div id="root"></div>
+
+        <!-- React and ReactDOM -->
+        <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+
+        <script>
+            function Home() {
+                const [show, setShow] = React.useState(false);
+                const [editMode, setEditMode] = React.useState(false);
+                const [editUserId, setEditUserId] = React.useState(null);
+                const [users, setUsers] = React.useState([]);
+                const [formData, setFormData] = React.useState({
+                    username: '',
+                    nome: '',
+                    email: '',
+                    numero: '',
+                    password: ''
+                });
+    
+                const fetchUsers = () => {
+                    fetch('http://127.0.0.1:5000/users/all')
+                        .then(response => response.json())
+                        .then(data => setUsers(data))
+                        .catch(error => console.error('Error fetching users:', error));
+                };
+    
+                const handleClose = () => {
+                    setShow(false);
+                    // Limpar o formulário ao fechar o modal
+                    setFormData({
+                        username: '',
+                        nome: '',
+                        email: '',
+                        numero: '',
+                        password: ''
+                    });
+                    setEditMode(false);
+                    setEditUserId(null);
+                }
+    
+                const handleShow = () => setShow(true);
+    
+                const handleInputChange = (e) => {
+                    const { name, value } = e.target;
+                    setFormData({
+                        ...formData,
+                        [name]: value
+                    });
+                }
+    
+                const handleEditUser = (userId) => {
+                    const userToEdit = users.find(user => user.id === userId);
+    
+                    setEditMode(true);
+                    setEditUserId(userId);
+    
+                    setFormData({
+                        username: userToEdit.username,
+                        nome: userToEdit.nome,
+                        email: userToEdit.email,
+                        numero: userToEdit.numero,
+                        password: userToEdit.password,
+                    });
+    
+                    handleShow();
+                }
+    
+                const handleDeleteUser = (userId) => {
+                    fetch(`http://127.0.0.1:5000/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('User deleted successfully:', data);
+                        fetchUsers();
+                    })
+                    .catch(error => console.error('Error deleting user:', error));
+                }
+    
+                const handleFormSubmit = (e) => {
+                    e.preventDefault();
+    
+                    const requestBody = {
+                        username: formData.username,
+                        nome: formData.nome,
+                        email: formData.email,
+                        numero: formData.numero,
+                        password: formData.password
+                    };
+    
+                    const url = editMode ? `http://127.0.0.1:5000/users/${editUserId}` : 'http://127.0.0.1:5000/users';
+    
+                    fetch(url, {
+                        method: editMode ? 'PUT' : 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestBody),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        fetchUsers();
+                        handleClose();
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
+    
+                React.useEffect(() => {
+                    // Buscar os usuários ao montar o componente
+                    fetchUsers();
+                }, []); // O array vazio garante que isso seja executado apenas uma vez ao montar o componente
+    
+                return (
+                    <div className="Home">
+                        <div className="container">
+                            {/* Seu código JSX aqui */}
+                        </div>
+                    </div>
+                );
+            }
+    
+            // Renderizar o componente Home
+            ReactDOM.render(
+                React.createElement(Home),
+                document.getElementById('root')
+            );
+        </script>
+    </body>
+</html>
