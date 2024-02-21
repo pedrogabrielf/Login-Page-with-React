@@ -16,7 +16,7 @@ function Home() {
     });
 
     const fetchUsers = () => {
-        fetch('http://127.0.0.1:5000/users/all')
+        fetch('http://192.168.43.148:5000/users/all')
             .then(response => response.json())
             .then(data => setUsers(data))
             .catch(error => console.error('Error fetching users:', error));
@@ -64,7 +64,7 @@ function Home() {
     }
 
     const handleDeleteUser = (userId) => {
-        fetch(`http://127.0.0.1:5000/users/${userId}`, {
+        fetch(`http://192.168.43.148:5000/users/${userId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ function Home() {
             password: formData.password
         };
 
-        const url = editMode ? `http://127.0.0.1:5000/users/${editUserId}` : 'http://127.0.0.1:5000/users';
+        const url = editMode ? `http://192.168.43.148:5000/users/${editUserId}` : 'http://192.168.43.148:5000/users';
 
         fetch(url, {
             method: editMode ? 'PUT' : 'POST',
